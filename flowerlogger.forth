@@ -12,23 +12,23 @@ variable: socket
 : connect ( -- ) PORT IP TCP netcon-connect socket ! ;
 : dispose ( -- ) socket @ netcon-dispose ;
 
-: write-str ( str -- ) socket @ swap netcon-write ;
-: write-number ( n -- ) line-buf swap >str line-buf write-str ;
-: write-lf ( -- ) str: "\n" write-str ;
+: write ( str -- ) socket @ swap netcon-write ;
+: n>str ( n -- str ) line-buf swap >str line-buf ;
+: lf ( -- ) str: "\n" ;
 : write-header ( -- )
-   str: "PUT " URL str: " HTTP/1.1\r\n" { write-str } tri@
-   str: "Host: " IP str: ":" { write-str } tri@
-   PORT write-number
-   str: "\r\n" write-str
-   str: "Content-Length: 128" write-str \ hack
-   str: "\r\n\r\n" write-str ;
+   str: "PUT " URL str: " HTTP/1.1\r\n" { write } tri@
+   str: "Host: " IP str: ":" { write } tri@
+   PORT n>str write
+   str: "\r\n" write
+   str: "Content-Length: 128" write \ hack
+   str: "\r\n\r\n" write ;
 : write-soil-humidity ( -- )
-   str: "soil_humidity " write-str
-   adc-read write-number write-lf ;
+   str: "soil_humidity " write
+   adc-read  n>str write  lf write ;
 : write-temp-and-humidity ( -- )
    dht-measure
-   { str: "temperature " write-str write-number write-lf }
-   { str: "humidity " write-str write-number write-lf }
+   { str: "temperature " write  n>str write  lf write }
+   { str: "humidity "    write  n>str write  lf write }
    bi* ;
 
 : send-measurements ( -- )
