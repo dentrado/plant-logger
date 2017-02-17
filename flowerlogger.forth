@@ -22,13 +22,12 @@ variable: socket
    str: "\r\n" write
    str: "Content-Length: 128" write \ hack
    str: "\r\n\r\n" write ;
-: write-soil-humidity ( -- )
-   str: "soil_humidity " write
-   adc-read  n>str write  lf write ;
+: write-metric ( n name -- ) write  n>str write  lf write ;
+: write-soil-humidity ( -- ) adc-read str: "soil_humidity " write-metric ;
 : write-temp-and-humidity ( -- )
    dht-measure
-   { str: "temperature " write  n>str write  lf write }
-   { str: "humidity "    write  n>str write  lf write }
+   { str: "temperature " write-metric }
+   { str: "humidity "    write-metric }
    bi* ;
 
 : send-measurements ( -- )
